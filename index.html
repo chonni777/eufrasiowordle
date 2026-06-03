@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Wordle</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #f5f5f5;
+    }
+
+    #tablero {
+        display: grid;
+        grid-template-columns: repeat(5, 60px);
+        gap: 5px;
+        justify-content: center;
+        margin: 20px auto;
+    }
+
+    .casilla {
+        width: 60px;
+        height: 60px;
+        border: 2px solid #ccc;
+        font-size: 30px;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+    }
+
+    .verde { background: #6aaa64; color: white; }
+    .amarillo { background: #c9b458; color: white; }
+    .gris { background: #787c7e; color: white; }
+
+    input {
+        font-size: 20px;
+        text-transform: uppercase;
+    }
+
+    button {
+        padding: 10px;
+        margin-left: 10px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Mini Wordle</h1>
+
+<div id="tablero"></div>
+
+<input type="text" id="palabra" maxlength="5">
+<button onclick="comprobar()">Probar</button>
+
+<p id="mensaje"></p>
+
+<script>
+function obtenerPalabraDelDia() {
+
+    // Fecha base (1 enero 2025)
+    const inicio = new Date("2025-01-01");
+
+    const hoy = new Date();
+
+    const diferenciaDias = Math.floor(
+        (hoy - inicio) / (1000 * 60 * 60 * 24)
+    );
+
+    return palabras[diferenciaDias % palabras.length];
+}
+
+const palabraSecreta = obtenerPalabraDelDia();
+let intento = 0;
+const maxIntentos = 6;
+
+const tablero = document.getElementById("tablero");
+
+for (let i = 0; i < maxIntentos * 5; i++) {
+    const casilla = document.createElement("div");
+    casilla.classList.add("casilla");
+    tablero.appendChild(casilla);
+}
+
+function comprobar() {
+    const entrada = document.getElementById("palabra");
+    const palabra = entrada.value.toUpperCase();
+
+    if (palabra.length !== 5) {
+        alert("Introduce una palabra de 5 letras");
+        return;
+    }
+
+    const casillas = document.querySelectorAll(".casilla");
+
+    for (let i = 0; i < 5; i++) {
+        const casilla = casillas[intento * 5 + i];
+        casilla.textContent = palabra[i];
+
+        if (palabra[i] === palabraSecreta[i]) {
+            casilla.classList.add("verde");
+        } else if (palabraSecreta.includes(palabra[i])) {
+            casilla.classList.add("amarillo");
+        } else {
+            casilla.classList.add("gris");
+        }
+    }
+
+    if (palabra === palabraSecreta) {
+        document.getElementById("mensaje").textContent =
+            "¡Has ganado!";
+        entrada.disabled = true;
+        return;
+    }
+
+    intento++;
+
+    if (intento >= maxIntentos) {
+        document.getElementById("mensaje").textContent =
+            "Has perdido. La palabra era " + palabraSecreta;
+        entrada.disabled = true;
+    }
+
+    entrada.value = "";
+}
+</script>
+
+</body>
+</html>
