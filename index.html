@@ -59,11 +59,11 @@
 <p id="mensaje"></p>
 
 <script>
-function obtenerPalabraDelDia() {
+async function obtenerPalabraDelDia() {
+    const respuesta = await fetch("palabras.json");
+    const palabras = await respuesta.json();
 
-    // Fecha base (1 enero 2025)
-    const inicio = new Date("2025-01-01");
-
+    const inicio = new Date("2026-06-03");
     const hoy = new Date();
 
     const diferenciaDias = Math.floor(
@@ -72,6 +72,12 @@ function obtenerPalabraDelDia() {
 
     return palabras[diferenciaDias % palabras.length];
 }
+
+let palabraSecreta = "";
+
+obtenerPalabraDelDia().then(palabra => {
+    palabraSecreta = palabra;
+});
 
 const palabraSecreta = obtenerPalabraDelDia();
 let intento = 0;
